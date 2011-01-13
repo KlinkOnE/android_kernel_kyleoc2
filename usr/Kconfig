@@ -73,8 +73,8 @@ config RD_LZMA
 	  If unsure, say N.
 
 config RD_XZ
-	bool "Support initial ramdisks compressed using XZ" if EXPERT
-	default !EXPERT
+	bool "Support initial ramdisks compressed using XZ" if EMBEDDED
+	default !EMBEDDED
 	depends on BLK_DEV_INITRD
 	select DECOMPRESS_XZ
 	help
