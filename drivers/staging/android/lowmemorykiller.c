@@ -184,6 +184,9 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	int other_free = global_page_state(NR_FREE_PAGES);
 	int other_file = global_page_state(NR_FILE_PAGES) -
 						global_page_state(NR_SHMEM);
+#ifdef CONFIG_ZRAM_FOR_ANDROID
+	other_file -= total_swapcache_pages;
+#endif
 	struct zone *zone;
 
 	if (offlining) {
@@ -486,10 +489,12 @@ static ssize_t lmk_state_store(struct device *dev,
 				break;
 		        }
 #if SWAP_PROCESS_DEBUG_LOG > 0
+				#if !defined(CONFIG_MACH_KYLE)
 				printk
 				    ("idletime compcache: swap process pid %d, name %s, oom %d, task_size %ld\n",
 				     p->pid, p->comm, p->signal->oom_adj,
 				     get_mm_rss(p->mm));
+				#endif
 #endif
 				break;
 			}

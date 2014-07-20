@@ -972,9 +972,10 @@ void ath6kl_cfg80211_scan_complete_event(struct ath6kl_vif *vif, bool aborted)
 {
 	struct ath6kl *ar = vif->ar;
 	int i;
-
+	#if !defined(CONFIG_MACH_KYLE)
 	ath6kl_dbg(ATH6KL_DBG_WLAN_CFG, "%s: status%s\n", __func__,
 		   aborted ? " aborted" : "");
+	#endif
 
 	if (!vif->scan_req)
 		return;
