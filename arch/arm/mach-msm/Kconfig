@@ -311,10 +311,8 @@ config  ARCH_MSM_KRAITMP
 config  ARCH_MSM_CORTEX_A5
 	bool
 	select HAVE_HW_BRKPT_RESERVED_RW_ACCESS
-	select HAVE_HW_BREAKPOINT
-	select PERF_EVENTS
 
-config  ARCH_MSM7X27A
+config ARCH_MSM7X27A
 	bool
 	select MSM_DALRPC
 	select MSM_PROC_COMM_REGULATOR
@@ -323,25 +321,25 @@ config  ARCH_MSM7X27A
 config  MSM_VIC
 	bool
 
-config  MSM_RPM
+config MSM_RPM
 	bool "Resource Power Manager"
 	select MSM_MPM
 
-config  MSM_MPM
+config MSM_MPM
 	bool "Modem Power Manager"
 
-config  MSM_XO
+config MSM_XO
 	bool
 
-config  MSM_REMOTE_SPINLOCK_DEKKERS
+config MSM_REMOTE_SPINLOCK_DEKKERS
 	bool
-config  MSM_REMOTE_SPINLOCK_SWP
+config MSM_REMOTE_SPINLOCK_SWP
 	bool
-config  MSM_REMOTE_SPINLOCK_LDREX
+config MSM_REMOTE_SPINLOCK_LDREX
 	bool
-config  MSM_REMOTE_SPINLOCK_SFPB
+config MSM_REMOTE_SPINLOCK_SFPB
 	bool
-config  MSM_ADM3
+config MSM_ADM3
 	bool
 
 menu "MSM Board Selection"
