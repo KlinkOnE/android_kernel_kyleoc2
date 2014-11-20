@@ -212,7 +212,7 @@ static struct clkctl_acpu_speed pll0_960_pll1_196_pll2_1200_pll4_800[] = {
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0, 0, 0, 0}, {0, 0, 0, 0} }
 };
 
-/* 7627aa PLL4 @ 1008MHz with GSM capable modem */
+/* 7627aa PLL4 @ 1008MHz with GSM capable modem / KyleOpen */
 static struct clkctl_acpu_speed pll0_960_pll1_245_pll2_1200_pll4_1008[] = {
 	{ 0, 19200, ACPU_PLL_TCXO, 0, 0, 2400, 3, 0, 30720 },
 	{ 0, 61440, ACPU_PLL_1, 1, 3,  7680, 3, 1, 61440 },
@@ -223,7 +223,15 @@ static struct clkctl_acpu_speed pll0_960_pll1_245_pll2_1200_pll4_1008[] = {
 	{ 1, 480000, ACPU_PLL_0, 4, 1, 60000, 3, 5, 122880 },
 	{ 0, 504000, ACPU_PLL_4, 6, 1, 63000, 3, 6, 200000 },
 	{ 1, 600000, ACPU_PLL_2, 2, 1, 75000, 3, 6, 200000 },
-	{ 1, 1008000, ACPU_PLL_4, 6, 0, 126000, 3, 7, 200000},
+	{ 1, 1008000, ACPU_PLL_4, 6, 0, 126000, 3, 7, 200000 },
+//	{ 0, 1056000, ACPU_PLL_4, 6, 0, 132000, 3, 7, 200000 },
+//	{ 0, 1113600, ACPU_PLL_4, 6, 0, 139200, 3, 7, 200000 },
+//	{ 0, 1152000, ACPU_PLL_2, 2, 0, 144000, 3, 7, 200000 },
+//	{ 0, 1190400, ACPU_PLL_4, 6, 0, 148800, 3, 7, 200000 },
+	{ 1, 1228800, ACPU_PLL_4, 6, 0, 153600, 3, 7, 200000 },
+//	{ 0, 1267200, ACPU_PLL_4, 6, 0, 158400, 3, 7, 200000 },
+//	{ 0, 1305600, ACPU_PLL_4, 6, 0, 163200, 3, 7, 200000 },
+// 	{ 0, 1344000, ACPU_PLL_4, 6, 0, 168000, 3, 7, 200000 },
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0, 0, 0, 0}, {0, 0, 0, 0} }
 };
 
@@ -493,6 +501,14 @@ static void acpuclk_set_div(const struct clkctl_acpu_speed *hunt_s)
 
 	/* AHB_CLK_DIV */
 	clk_div = (reg_clksel >> 1) & 0x03;
+
+	/* Change PLL4 speed to match bus speed when over 1GHz */
+	if (hunt_s->a11clk_khz > 1008000) {
+		/* Write the new speed - clock step 19200 */
+		writel(hunt_s->a11clk_khz/19200,PLL4_L_VAL);
+		udelay(50);
+	}
+
 	/* CLK_SEL_SRC1NO */
 	src_sel = reg_clksel & 1;
 
@@ -516,6 +532,13 @@ static void acpuclk_set_div(const struct clkctl_acpu_speed *hunt_s)
 	/* Program clock source selection */
 	reg_clksel ^= 1;
 	writel_relaxed(reg_clksel, A11S_CLK_SEL_ADDR);
+
+	/* Restore PLL4 when CPU scale back under 1GHz */
+	if (hunt_s->a11clk_khz <= 1008000) {
+		/* Write the standard PLL4 values */
+		writel(PLL_1008_MHZ, PLL4_L_VAL);
+		udelay(50);
+        }
 
 	/*
 	 * If the new clock divider is lower than the previous, then
